@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+{% block title %}Задача | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel wide-panel">
+        <a class="close" href="{% url 'schedule' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        {% include 'main/includes/messages.html' %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="panel-title-row">
+                <h1>Детали задачи</h1>
+                <select name="status" aria-label="Статус">
+                    {% for value, label in statuses %}<option value="{{ value }}" {% if value == task.status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <span class="due-chip">Срок: {{ task.due_at|time:"H:i" }} | {{ task.due_at|date:"j E Y" }}</span>
+                <button class="btn-blue btn-small" type="submit">Сохранить</button>
+            </div>
+        </form>
+        <p class="field-label">Название</p>
+        <h2 class="field-value">{{ task.title }}</h2>
+        <p class="field-label">Кем назначено</p>
+        <h2 class="field-value">{{ task.assigned_by|default:"-" }}</h2>
+        <h2 class="muted-title">Описание</h2>
+        <p class="description">{{ task.description|default:"Описания нет." }}</p>
+        <div class="form-actions">
+            <a class="btn-light btn-small" href="{% url 'task_edit' task.pk %}">Редактировать</a>
+            <a class="btn-light btn-small" href="{% url 'task_delete' task.pk %}">Удалить</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

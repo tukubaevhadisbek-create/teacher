@@ -1,0 +1,111 @@
+{% extends 'main/base.html' %}
+{% block title %}Создание {{ ru.gen }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel">
+        <a class="close" href="{% url kind|add:'_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        {% include 'main/includes/messages.html' %}
+        <h1>Создание {{ ru.gen }}</h1>
+
+        {% if step != 'preview' %}
+        <div class="progress-label wide"><span>Шаг <span class="blue">{{ step_number }}</span> из {{ total_steps }}</span></div>
+        <div class="progress wide"><div style="width: {% widthratio step_number total_steps 100 %}%"></div></div>
+        {% else %}
+        <p class="small-label">Предпросмотр: проверьте данные и создайте {{ ru.acc }}</p>
+        {% endif %}
+
+        {% if step == 'course' %}<h2 class="muted-title">Выберите курс</h2>
+        {% elif step == 'subject' %}<h2 class="muted-title">Выберите предмет <span class="muted">({{ course.name }})</span></h2>
+        {% elif step == 'batches' %}<h2 class="muted-title">Выберите группы</h2>
+        {% elif step == 'details' %}<h2 class="muted-title">Данные: {{ ru.acc }}</h2>
+        {% elif step == 'questions' %}<h2 class="muted-title">Выберите вопросы</h2>
+            <p class="muted">Необязательно. Выберите вопросы по предмету «{{ subject.name }}» из вашего банка вопросов. Если вы выберете вопросы, их число заменит «Количество вопросов», а их баллы дадут общую сумму баллов.</p>
+        {% elif step == 'files' %}<h2 class="muted-title">Прикрепите PDF-файлы</h2>
+            <p class="muted">Необязательно. Только PDF, до 5 МБ каждый.</p>
+        {% elif step == 'tags' %}<h2 class="muted-title">Состав вопросов по тегам</h2>
+            <p class="muted">Процент вопросов для каждого тега. Сумма должна быть равна 100.</p>
+        {% endif %}
+
+        {% if step == 'preview' %}
+        <form method="post" class="panel-form">
+            {% csrf_token %}
+            <h2 class="field-value">{{ draft.title }}</h2>
+            <p class="detail-line tight"><span class="muted">Курс</span> <strong>{{ course.name }}</strong></p>
+            <p class="detail-line tight"><span class="muted">Предмет</span> <strong>{{ subject.name }}</strong></p>
+            {% if kind == 'assignment' %}
+            <p class="detail-line"><strong>Максимальный балл: {{ total_marks }}</strong></p>
+            {% else %}
+            <p class="detail-line"><strong>Вопросов: {{ question_count }}</strong> &nbsp; <strong>Баллов: {{ total_marks }}</strong></p>
+            <div class="progress-label wide"><span>Проходной процент</span><span class="blue">{{ draft.passing_percentage }}%</span></div>
+            <div class="progress wide"><div style="width: {{ draft.passing_percentage }}%"></div></div>
+            {% endif %}
+            <p class="small-label">{% if kind == 'assignment' %}Выдача задания{% else %}Расписание{% endif %}</p>
+            <div class="chips-row">
+                <span class="date-chip">{% include 'main/includes/icon.html' with name='calendar' %} {{ draft.date }}</span>
+                <span class="date-chip">{% include 'main/includes/icon.html' with name='clock' %} {{ draft.start_time|slice:":5" }}{% if kind != 'assignment' %} - {{ draft.end_time|slice:":5" }}{% endif %}</span>
+            </div>
+            {% if kind == 'assignment' %}
+            <p class="small-label">Срок сдачи</p>
+            <div class="chips-row">
+                <span class="date-chip">{% include 'main/includes/icon.html' with name='calendar' %} {{ draft.due_date }}</span>
+                <span class="date-chip">{% include 'main/includes/icon.html' with name='clock' %} {{ draft.due_time|slice:":5" }}</span>
+            </div>
+            <p class="small-label">Загруженные файлы</p>
+            <div class="chips-row tight-row">{% for f in files %}<span class="chip chip-outline">{{ f.name }}</span>{% empty %}<span class="muted">Файлов нет.</span>{% endfor %}</div>
+            {% endif %}
+            <p class="small-label">Группы</p>
+            <div class="chips-row">{% for b in batches %}<span class="chip chip-outline">{{ b.name }}</span>{% endfor %}</div>
+            {% if picked %}
+            <h3 class="tags-title">Выбранные вопросы ({{ picked|length }})</h3>
+            <ol class="small-list">{% for q in picked %}<li>{{ q.text|truncatechars:90 }} <span class="muted">(баллов: {{ q.marks }})</span></li>{% endfor %}</ol>
+            {% endif %}
+            {% if tag_parts %}
+            <h3 class="tags-title">Состав вопросов по тегам</h3>
+            {% for tag, percent in tag_parts %}
+                <div class="tag-row"><span>{{ tag.name }}</span><span>{{ percent }}%</span></div>
+                <div class="progress tag-bar tag-{{ forloop.counter }}"><div style="width: {{ percent }}%"></div></div>
+            {% endfor %}{% endif %}
+            <div class="form-actions">
+                <a class="btn-light" href="{% url kind|add:'_wizard' prev_step %}">Назад</a>
+                <button class="btn-blue" type="submit">Создать {{ ru.acc }}</button>
+            </div>
+        </form>
+
+        {% elif step == 'files' %}
+        <div class="step-card">
+            <h3 class="card-title">Загруженные файлы</h3>
+            {% for f in files %}
+            <form method="post" class="file-line">{% csrf_token %}
+                <input type="hidden" name="action" value="remove"><input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                <span>{{ f.name }}</span><button class="link-button red" type="submit">Убрать</button>
+            </form>
+            {% empty %}<p class="muted">Файлов пока нет.</p>{% endfor %}
+            <form method="post" enctype="multipart/form-data" class="panel-form">
+                {% csrf_token %}
+                {{ form.as_div }}
+                <input type="hidden" name="action" value="upload">
+                <button class="btn-light btn-wide" type="submit">Загрузить PDF</button>
+            </form>
+            <form method="post">{% csrf_token %}
+                <input type="hidden" name="action" value="next">
+                <button class="btn-blue btn-wide" type="submit">Продолжить</button>
+            </form>
+        </div>
+        <form method="post">{% csrf_token %}
+            <button class="back-link link-button" type="submit" name="nav" value="back">&larr; Назад</button>
+        </form>
+
+        {% else %}
+        <form method="post" class="panel-form step-card">
+            {% csrf_token %}
+            {% if step == 'details' %}<h3 class="card-title">Параметры: {{ ru.acc }}</h3>{% endif %}
+            {% if not form.fields.course.queryset.exists and step == 'course' %}<p class="muted">У вас пока нет курсов. <a class="blue" href="{% url 'course_add' %}">Создайте курс</a>.</p>{% endif %}
+            {{ form.as_div }}
+            <button class="btn-blue btn-wide" type="submit">Продолжить</button>
+            {% if prev_step %}<button class="back-link link-button" type="submit" name="nav" value="back" formnovalidate>&larr; Назад</button>{% endif %}
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

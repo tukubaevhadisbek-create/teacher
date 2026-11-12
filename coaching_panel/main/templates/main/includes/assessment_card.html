@@ -1,0 +1,18 @@
+<article class="info-card">
+    <h3>{{ a.title }}</h3>
+    <p class="muted">Курс: {{ a.course.name }}</p>
+    <p class="muted">Предмет: {{ a.subject.name }}</p>
+    <p class="meta dark">
+        <span>{% include 'main/includes/icon.html' with name='calendar' %} {{ a.date|date:"d.m.Y" }}</span>
+        <span>{% include 'main/includes/icon.html' with name='clock' %} {{ a.start_time|time:"H:i" }} - {{ a.end_time|time:"H:i" }}</span>
+    </p>
+    {% if a.kind == 'assignment' %}
+    <p class="muted">Максимальный балл: {{ a.total_marks }}</p>
+    <p class="muted">Срок сдачи: {% if a.due_at %}{{ a.due_at|date:"d.m.Y, H:i" }}{% else %}не указан{% endif %}</p>
+    {% else %}
+    <p class="muted">Вопросов: {{ a.questions_count }} · Баллов: {{ a.total_marks }}</p>
+    <div class="progress-label"><span>Проходной процент</span><span class="blue">{{ a.passing_percentage }}%</span></div>
+    <div class="progress"><div style="width: {{ a.passing_percentage }}%"></div></div>
+    {% endif %}
+    <a class="btn-blue" href="{% url detail_url a.pk %}">Подробнее</a>
+</article>

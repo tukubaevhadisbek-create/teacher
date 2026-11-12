@@ -1,0 +1,23 @@
+{% load static %}<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TIPS-G{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+</head>
+<body>
+{% block body %}
+<div class="app">
+    {% include 'main/includes/sidebar.html' %}
+    <div class="main">
+        {% include 'main/includes/header.html' %}
+        <main class="content">
+            {% include 'main/includes/messages.html' %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

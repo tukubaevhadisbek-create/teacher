@@ -1,0 +1,17 @@
+<article class="class-card status-{{ c.status }}">
+    <h3>{{ c.title }}</h3>
+    <span class="chip chip-outline">Группа {{ c.batch.name }}</span>
+    <p class="meta">
+        <span>{% include 'main/includes/icon.html' with name='clock' %} {{ c.time|time:"H:i" }}</span>
+        <span>{% include 'main/includes/icon.html' with name='calendar' %} {{ c.date|date:"j E Y" }}</span>
+    </p>
+    <span class="chip chip-status">Статус: {{ c.get_status_display }}</span>
+    {% if c.status == 'completed' %}
+        <a class="btn-black" href="{% url 'attendance' c.pk %}">{% if c.pk in attended_ids %}Отчёт о посещаемости{% else %}Отметить посещаемость{% endif %}</a>
+    {% elif c.meeting_link %}
+        <a class="btn-black" href="{{ c.meeting_link }}" target="_blank" rel="noopener">Присоединиться</a>
+    {% else %}
+        <a class="btn-black" href="{% url 'live_class_edit' c.pk %}">Добавить ссылку</a>
+    {% endif %}
+    {% if edit %}<p class="card-actions"><a href="{% url 'live_class_edit' c.pk %}">Редактировать</a> <a href="{% url 'live_class_delete' c.pk %}">Удалить</a></p>{% endif %}
+</article>

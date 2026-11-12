@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ course.name }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel batch-panel">
+        <a class="close" href="{% url 'course_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        {% if can_edit %}<a class="btn-delete" href="{% url 'course_delete' course.pk %}">{% include 'main/includes/icon.html' with name='trash' %} Удалить</a>{% endif %}
+        {% include 'main/includes/messages.html' %}
+        <h1>Курс: {{ course.name }}</h1>
+        {% if course.description %}<p class="description">{{ course.description }}</p>{% endif %}
+        {% if not can_edit %}<p class="muted">Это общий курс, изменять его может только администратор.</p>{% endif %}
+
+        <h3 class="muted-title">Предметы</h3>
+        <div class="sem-grid">
+            {% for sem, subjects in semesters %}
+            <div><h4>Семестр {{ sem }}</h4>
+                <ol>{% for s in subjects %}<li>{{ s.name }}{% if can_edit %} <a class="red" href="{% url 'subject_delete' s.pk %}">Удалить</a>{% endif %}</li>{% endfor %}</ol></div>
+            {% empty %}<p class="muted">Предметов пока нет.</p>{% endfor %}
+        </div>
+        {% if can_edit %}<p><a class="blue" href="{% url 'subject_add' course.pk %}">+ Добавить предмет</a></p>{% endif %}
+
+        <h3 class="muted-title">Ваши группы на этом курсе</h3>
+        <ul class="plain-list">
+            {% for b in batches %}<li><a href="{% url 'batch_detail' b.pk %}">{{ b.name }}</a> (студентов: {{ b.student_count }})</li>
+            {% empty %}<li class="muted">Групп пока нет. <a class="blue" href="{% url 'batch_add' %}">Создать группу</a></li>{% endfor %}
+        </ul>
+
+        {% if can_edit %}
+        <div class="form-actions">
+            <a class="btn-blue btn-small" href="{% url 'course_edit' course.pk %}">Редактировать</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+<form class="search" method="get">
+    {% if tab %}<input type="hidden" name="tab" value="{{ tab }}">{% endif %}
+    {% include 'main/includes/icon.html' with name='search' %}
+    <input type="text" name="q" value="{{ q }}" placeholder="Поиск..." aria-label="Поиск">
+</form>

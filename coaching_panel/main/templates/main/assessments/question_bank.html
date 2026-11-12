@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% block title %}Банк вопросов | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h2>Тесты</h2>
+    <a class="btn-blue btn-small" href="{% url 'question_add' %}">+ Добавить вопрос</a>
+</div>
+<div class="tabs-row">
+    <nav class="tabs">
+        <a href="{% url 'quiz_list' %}?tab=scheduled">Предстоящие</a>
+        <a href="{% url 'question_bank' %}" class="active">Банк вопросов</a>
+        <a href="{% url 'quiz_list' %}?tab=history">История</a>
+    </nav>
+    {% include 'main/includes/search.html' %}
+</div>
+<div class="tag-strip">
+    <strong>Теги:</strong>
+    {% for tag in tags %}<a class="chip chip-outline" href="{% url 'tag_detail' tag.pk %}">{{ tag.name }}</a>{% empty %}<span class="muted">Тегов пока нет.</span>{% endfor %}
+    <a class="blue" href="{% url 'tag_add' %}">+ Добавить тег</a>
+</div>
+<table class="table">
+    <thead><tr><th>Вопрос</th><th>Предмет</th><th>Тег</th><th>Баллы</th><th></th></tr></thead>
+    <tbody>
+    {% for question in page %}
+        <tr>
+            <td>{{ question.text }}</td>
+            <td>{{ question.subject.name }}</td>
+            <td>{% if question.tag %}<a href="{% url 'tag_detail' question.tag.pk %}">{{ question.tag.name }}</a>{% else %}-{% endif %}</td>
+            <td>{{ question.marks }}</td>
+            <td><a href="{% url 'question_delete' question.pk %}">Удалить</a></td>
+        </tr>
+    {% empty %}<tr><td colspan="5">Вопросов пока нет.</td></tr>{% endfor %}
+    </tbody>
+</table>
+{% include 'main/includes/pagination.html' %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% block title %}Вход | TIPS-G{% endblock %}
+{% block body %}
+<div class="login-page">
+    <form class="login-box" method="post">
+        {% csrf_token %}
+        <div class="logo login-logo">
+            <svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><path d="M1 1h24v6h-9v22h-6V7H1z" fill="#222"/></svg>
+            <span>TIPS-G</span>
+        </div>
+        <h1>Панель преподавателя</h1>
+        {% if form.errors %}<p class="form-error">Неверное имя пользователя или пароль.</p>{% endif %}
+        <label for="id_username">Имя пользователя</label>
+        <input type="text" name="username" id="id_username" autofocus required>
+        <label for="id_password">Пароль</label>
+        <input type="password" name="password" id="id_password" required>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="btn-blue" type="submit">Войти</button>
+    </form>
+</div>
+{% endblock %}

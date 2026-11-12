@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ title }} | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>{{ title }}</h2></div>
+<form method="post" class="form-card">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <div class="form-actions">
+        <button class="btn-blue" type="submit">Сохранить</button>
+        {% if back_args %}<a class="btn-light" href="{% url back back_args.0 %}">Отмена</a>
+        {% else %}<a class="btn-light" href="{% url back %}">Отмена</a>{% endif %}
+    </div>
+</form>
+{% endblock %}

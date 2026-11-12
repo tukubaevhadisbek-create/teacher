@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% block title %}Задание: подробности | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel">
+        <a class="close" href="{% url 'assignment_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        <a class="btn-delete" href="{% url 'assignment_delete' a.pk %}">{% include 'main/includes/icon.html' with name='trash' %} Удалить</a>
+        {% include 'main/includes/messages.html' %}
+        <h1 class="assignment-title">{{ a.title }}</h1>
+        <p class="detail-line tight"><span class="muted">Курс</span> <strong>{{ a.course.name }}</strong></p>
+        <p class="detail-line tight"><span class="muted">Предмет</span> <strong>{{ a.subject.name }}</strong></p>
+        <p class="detail-line"><strong>Максимальный балл: {{ a.total_marks }}</strong></p>
+
+        <p class="small-label">Прикреплённые файлы</p>
+        <div class="chips-row tight-row">
+            {% for f in a.attachments.all %}
+            <span class="chip chip-outline"><a href="{% url 'attachment_download' f.pk %}" target="_blank">{{ f.name }}</a>
+                · <a class="red" href="{% url 'attachment_delete' f.pk %}">Удалить</a></span>
+            {% empty %}<span class="muted">Файлов нет.</span>{% endfor %}
+        </div>
+        <p><a class="blue" href="{% url 'attachment_add' a.pk %}">+ Прикрепить PDF</a></p>
+
+        <p class="small-label">Выдача задания</p>
+        <div class="chips-row">
+            <span class="date-chip">{% include 'main/includes/icon.html' with name='calendar' %} {{ a.date|date:"d.m.Y" }}</span>
+            <span class="date-chip">{% include 'main/includes/icon.html' with name='clock' %} {{ a.start_time|time:"H:i" }}</span>
+        </div>
+        <p class="small-label">Срок сдачи</p>
+        {% if a.due_at %}
+        <div class="chips-row">
+            <span class="date-chip">{% include 'main/includes/icon.html' with name='calendar' %} {{ a.due_at|date:"d.m.Y" }}</span>
+            <span class="date-chip">{% include 'main/includes/icon.html' with name='clock' %} {{ a.due_at|time:"H:i" }}</span>
+        </div>
+        {% else %}<p class="muted">Не указан. <a class="blue" href="{% url 'assignment_edit' a.pk %}">Указать срок сдачи</a></p>{% endif %}
+
+        <h3 class="tags-title">Группы</h3>
+        <ul class="plain-list muted">
+            {% for batch in a.batches.all %}<li><a href="{% url 'batch_detail' batch.pk %}">{{ batch.name }}</a></li>
+            {% empty %}<li>Группы не выбраны.</li>{% endfor %}
+        </ul>
+
+        <p class="small-label">Результаты</p>
+        <p class="muted">Оценено работ: {{ results_count }}</p>
+
+        <div class="form-actions">
+            <a class="btn-blue btn-small" href="{% url 'assignment_results' a.pk %}">Оценки студентов</a>
+            <a class="btn-light btn-small" href="{% url 'assignment_edit' a.pk %}">Редактировать</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

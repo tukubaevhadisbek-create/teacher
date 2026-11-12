@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% block title %}Мой профиль | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>Мой профиль</h2></div>
+<div class="stat-tiles">
+    {% for label, value in summary %}
+    <div class="stat-tile"><span class="stat-value">{{ value }}</span><span class="stat-label">{{ label }}</span></div>
+    {% endfor %}
+</div>
+<form method="post" class="form-card">
+    {% csrf_token %}
+    <p class="muted">Имя пользователя для входа: <strong>{{ user.username }}</strong></p>
+    {{ form.as_div }}
+    <div class="form-actions">
+        <button class="btn-blue" type="submit">Сохранить</button>
+        <a class="btn-light" href="{% url 'settings' %}">Сменить пароль</a>
+    </div>
+</form>
+{% endblock %}

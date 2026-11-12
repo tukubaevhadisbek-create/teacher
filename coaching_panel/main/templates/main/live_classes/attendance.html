@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+{% block title %}Посещаемость | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>{% if has_report %}Отчёт о посещаемости{% else %}Посещаемость{% endif %}</h2></div>
+<p class="muted">{{ live_class.title }} &middot; Группа {{ live_class.batch.name }} &middot; {{ live_class.date|date:"j E Y" }}, {{ live_class.time|time:"H:i" }}</p>
+<form method="post" class="form-card wide">
+    {% csrf_token %}
+    <table class="table">
+        <thead><tr><th>Студент</th><th>Код студента</th><th>Присутствовал</th></tr></thead>
+        <tbody>
+        {% for student, present in rows %}
+            <tr>
+                <td><a href="{% url 'student_profile' student.pk %}">{{ student.full_name }}</a></td>
+                <td>{{ student.student_code }}</td>
+                <td><input type="checkbox" name="present" value="{{ student.pk }}" {% if present or present is None %}checked{% endif %} aria-label="Присутствовал"></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3">В этой группе нет студентов.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="form-actions">
+        <button class="btn-blue" type="submit">Сохранить посещаемость</button>
+        <a class="btn-light" href="{% url 'live_class_list' %}?tab=history">Назад</a>
+    </div>
+</form>
+{% endblock %}

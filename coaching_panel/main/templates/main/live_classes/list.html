@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+{% block title %}Онлайн-занятия | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h2>Онлайн-занятия</h2>
+    <a class="btn-blue btn-small" href="{% url 'live_class_add' %}">+ Добавить занятие</a>
+</div>
+<div class="tabs-row">
+    <nav class="tabs">
+        <a href="?tab=scheduled" class="{% if tab == 'scheduled' %}active{% endif %}">Предстоящие</a>
+        <a href="?tab=history" class="{% if tab == 'history' %}active{% endif %}">История занятий</a>
+    </nav>
+    {% include 'main/includes/search.html' %}
+</div>
+<div class="card-grid">
+    {% for c in page %}{% include 'main/includes/live_card.html' with edit=True %}
+    {% empty %}<p class="empty">Занятий не найдено.</p>{% endfor %}
+</div>
+{% include 'main/includes/pagination.html' %}
+{% endblock %}

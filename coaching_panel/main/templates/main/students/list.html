@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+{% block title %}Студенты | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h2>Студенты</h2>
+    <a class="btn-blue btn-small" href="{% url 'student_add' %}">+ Добавить студента</a>
+</div>
+<form class="filter-row" method="get">
+    <div class="search">
+        {% include 'main/includes/icon.html' with name='search' %}
+        <input type="text" name="q" value="{{ q }}" placeholder="Имя или код студента" aria-label="Поиск">
+    </div>
+    <select name="course" aria-label="Курс">
+        <option value="">Все курсы</option>
+        {% for c in courses %}<option value="{{ c.pk }}" {% if course_id == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+    </select>
+    <select name="batch" aria-label="Группа">
+        <option value="">Все группы</option>
+        {% for b in batches %}<option value="{{ b.pk }}" {% if batch_id == b.pk|stringformat:"s" %}selected{% endif %}>{{ b.name }}</option>{% endfor %}
+    </select>
+    <button class="btn-blue btn-small" type="submit">Найти</button>
+    <a class="btn-light btn-small" href="{% url 'student_list' %}">Сбросить</a>
+</form>
+<table class="table">
+    <thead><tr><th>Студент</th><th>Код</th><th>Группа</th><th>Курс</th><th></th></tr></thead>
+    <tbody>
+    {% for s in page %}
+        <tr>
+            <td><a href="{% url 'student_profile' s.pk %}">{{ s.full_name }}</a></td>
+            <td>{{ s.student_code }}</td>
+            <td>{{ s.batch.name }}</td>
+            <td>{{ s.batch.course.name }}</td>
+            <td><a href="{% url 'student_edit' s.pk %}">Редактировать</a> &nbsp; <a href="{% url 'student_delete' s.pk %}">Удалить</a></td>
+        </tr>
+    {% empty %}<tr><td colspan="5">Студентов не найдено.</td></tr>{% endfor %}
+    </tbody>
+</table>
+{% include 'main/includes/pagination.html' %}
+{% endblock %}

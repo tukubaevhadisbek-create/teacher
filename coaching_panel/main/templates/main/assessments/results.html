@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+{% block title %}Результаты | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>{% if kind == 'assignment' %}Оценки{% else %}Результаты{% endif %}: {{ a.title }}</h2></div>
+<p class="muted">Максимум баллов: {{ total }}. Для зачёта нужно набрать не меньше {{ a.passing_percentage }}%. Если студент не выполнил работу, оставьте поле пустым.</p>
+<form method="post" class="form-card wide">
+    {% csrf_token %}
+    <table class="table">
+        <thead><tr><th>Студент</th><th>Группа</th><th>Баллы</th><th>Итог</th></tr></thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td><a href="{% url 'student_profile' row.student.pk %}">{{ row.student.full_name }}</a></td>
+                <td>{{ row.student.batch.name }}</td>
+                <td>
+                    <input type="number" name="score_{{ row.student.pk }}" value="{{ row.value }}" min="0" max="{{ total }}" aria-label="Баллы: {{ row.student.full_name }}">
+                    {% if row.error %}<p class="form-error">{{ row.error }}</p>{% endif %}
+                </td>
+                <td class="{% if row.result.status == 'passed' %}green{% elif row.result.status == 'failed' %}red{% else %}grey{% endif %}">{% if row.result %}{{ row.result.get_status_display }}{% else %}&mdash;{% endif %}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">В выбранных группах нет студентов.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="form-actions">
+        <button class="btn-blue" type="submit">Сохранить результаты</button>
+        <a class="btn-light" href="{% url kind|add:'_detail' a.pk %}">Назад</a>
+    </div>
+</form>
+{% endblock %}

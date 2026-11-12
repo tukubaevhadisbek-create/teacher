@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% block title %}Настройки | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>Настройки</h2></div>
+<form method="post" class="form-card">
+    {% csrf_token %}
+    <h3 class="card-title">Смена пароля</h3>
+    {{ form.as_div }}
+    <div class="form-actions">
+        <button class="btn-blue" type="submit">Изменить пароль</button>
+        <a class="btn-light" href="{% url 'dashboard' %}">Отмена</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ student.full_name }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="profile-page">
+    {% include 'main/includes/messages.html' %}
+    <div class="profile-top">
+        <a class="back" href="{% url 'student_list' %}" aria-label="Назад">{% include 'main/includes/icon.html' with name='back' %}</a>
+        <h1>Профиль студента</h1>
+        <span class="profile-actions">
+            <a class="btn-light btn-small" href="{% url 'student_edit' student.pk %}">Редактировать</a>
+            <a class="btn-light btn-small" href="{% url 'student_delete' student.pk %}">Удалить</a>
+        </span>
+    </div>
+    <div class="profile-head">
+        <div class="avatar" aria-hidden="true">{{ initials }}</div>
+        <div class="profile-name">
+            <h2>{{ student.full_name }}</h2>
+            <p>Код студента: {{ student.student_code }}</p>
+            <p>Пол: {{ student.get_gender_display }}</p>
+        </div>
+        <div class="attendance-box">
+            <h3>Посещаемость</h3>
+            <div><span class="percent">{{ attendance_percent }}%</span>
+                <span class="fraction"><b class="green">{{ attended }}</b>/{{ total_classes }}</span></div>
+        </div>
+    </div>
+
+    <nav class="tabs profile-tabs">
+        <a href="?tab=general" class="{% if tab == 'general' %}active{% endif %}">Общее</a>
+        <a href="?tab=quiz" class="{% if tab == 'quiz' %}active{% endif %}">Тесты</a>
+        <a href="?tab=exams" class="{% if tab == 'exams' %}active{% endif %}">Экзамены</a>
+        <a href="?tab=assignment" class="{% if tab == 'assignment' %}active{% endif %}">Задания</a>
+        <a href="?tab=classes" class="{% if tab == 'classes' %}active{% endif %}">Занятия</a>
+    </nav>
+
+    {% if tab == 'general' %}
+    <div class="general">
+        <div class="general-left">
+            <p><strong>Курс: {{ student.batch.course.name }}</strong></p>
+            <p><strong>Группа: <a href="{% url 'batch_detail' student.batch.pk %}">{{ student.batch.name }}</a></strong></p>
+            <p><strong>ФИО: {{ student.full_name }}</strong></p>
+            <p>Имя матери: {{ student.mother_name|default:"-" }}</p>
+            <p>Имя отца: {{ student.father_name|default:"-" }}</p>
+            <p>Начало курса: {{ student.course_start|date:"j E Y" }}</p>
+            <p>Окончание курса: {{ student.course_end|date:"j E Y" }}</p>
+        </div>
+        <div class="center-box">
+            <div>
+                <h4>Данные центра</h4>
+                <p>Индекс: {{ student.center_pincode|default:"-" }}<br>Район: {{ student.center_district|default:"-" }}<br>Область: {{ student.center_state|default:"-" }}</p>
+                <p>Адрес: {{ student.center_address|default:"-" }}</p>
+            </div>
+            <div>
+                <h4>Контакты центра</h4>
+                <p>{% include 'main/includes/icon.html' with name='phone' %} {{ student.center_phone|default:"-" }}</p>
+                <p>{% include 'main/includes/icon.html' with name='mail' %} {{ student.center_email|default:"-" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-row">
+        <div class="stat-block"><h4>Посещаемость</h4><div class="stat-card">
+            <p><strong>Всего занятий: {{ total_classes }}</strong></p>
+            <p class="green">Посетил: {{ attended }}</p><p class="red">Пропустил: {{ missed }}</p>
+            <a class="btn-blue" href="?tab=classes">Подробнее</a></div></div>
+        <div class="stat-block"><h4>Тесты</h4><div class="stat-card">
+            <p><strong>Всего тестов: {{ quiz_stats.total }}</strong></p>
+            <p>Выполнено: {{ quiz_stats.attempted }} <span class="grey">Не выполнено: {{ quiz_stats.unattempted }}</span></p>
+            <p><span class="green">Сдано: {{ quiz_stats.passed }}</span> <span class="red">Не сдано: {{ quiz_stats.failed }}</span></p>
+            <a class="btn-blue" href="?tab=quiz">Подробнее</a></div></div>
+        <div class="stat-block"><h4>Экзамены</h4><div class="stat-card">
+            <p><strong>Всего экзаменов: {{ exam_stats.total }}</strong></p>
+            <p>Выполнено: {{ exam_stats.attempted }} <span class="grey">Не выполнено: {{ exam_stats.unattempted }}</span></p>
+            <p><span class="green">Сдано: {{ exam_stats.passed }}</span> <span class="red">Не сдано: {{ exam_stats.failed }}</span></p>
+            <a class="btn-blue" href="?tab=exams">Подробнее</a></div></div>
+        <div class="stat-block"><h4>Задания</h4><div class="stat-card">
+            <p><strong>Всего заданий: {{ assignment_stats.total }}</strong></p>
+            <p>Выполнено: {{ assignment_stats.attempted }} <span class="grey">Не выполнено: {{ assignment_stats.unattempted }}</span></p>
+            <p><span class="green">Сдано: {{ assignment_stats.passed }}</span> <span class="red">Не сдано: {{ assignment_stats.failed }}</span></p>
+            <a class="btn-blue" href="?tab=assignment">Подробнее</a></div></div>
+    </div>
+    {% elif tab == 'classes' %}
+    <table class="table profile-table">
+        <thead><tr><th>Занятие</th><th>Дата</th><th>Посещение</th></tr></thead>
+        <tbody>
+        {% for row in rows %}<tr><td>{{ row.live_class.title }}</td><td>{{ row.live_class.date|date:"j E Y" }}</td>
+            <td class="{% if row.present %}green{% else %}red{% endif %}">{% if row.present %}Присутствовал{% else %}Отсутствовал{% endif %}</td></tr>
+        {% empty %}<tr><td colspan="3">Записей о посещаемости нет.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <table class="table profile-table">
+        <thead><tr><th>Название</th><th>Дата</th><th>Результат</th><th>Баллы</th></tr></thead>
+        <tbody>
+        {% for row in rows %}<tr><td>{{ row.assessment.title }}</td><td>{{ row.assessment.date|date:"j E Y" }}</td>
+            <td class="{% if row.status == 'passed' %}green{% elif row.status == 'failed' %}red{% else %}grey{% endif %}">{{ row.get_status_display }}</td>
+            <td>{{ row.score }}</td></tr>
+        {% empty %}<tr><td colspan="4">Пока ничего нет.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

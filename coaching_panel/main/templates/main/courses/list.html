@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+{% block title %}Курсы | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h2>Курсы</h2>
+    <a class="btn-blue btn-small" href="{% url 'course_add' %}">+ Создать курс</a>
+</div>
+<div class="tabs-row">
+    <span></span>
+    {% include 'main/includes/search.html' %}
+</div>
+<div class="card-grid">
+    {% for course in page %}
+    <article class="info-card">
+        <h3>{{ course.name }}</h3>
+        <p class="muted">Предметов: {{ course.subject_count }}</p>
+        <p class="muted">Ваших студентов: {{ course.student_count }}</p>
+        <a class="btn-blue" href="{% url 'course_detail' course.pk %}">Подробнее</a>
+    </article>
+    {% empty %}<p class="empty">Курсов не найдено.</p>{% endfor %}
+</div>
+{% include 'main/includes/pagination.html' %}
+{% endblock %}

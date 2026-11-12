@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ ru.plural }} | TIPS-G{% endblock %}
+{% block content %}
+{% with detail_url=kind|add:"_detail" %}
+<div class="page-head">
+    <h2>{{ ru.plural }}</h2>
+    {% if kind == 'quiz' and tab == 'history' %}
+        <a class="btn-blue btn-small" href="{% url 'tag_add' %}">+ Добавить тег</a>
+    {% else %}
+        <a class="btn-blue btn-small" href="{% url kind|add:'_add' %}">+ Создать {{ ru.acc }}</a>
+    {% endif %}
+</div>
+<div class="tabs-row">
+    <nav class="tabs">
+        <a href="{% url kind|add:'_list' %}?tab=scheduled" class="{% if tab == 'scheduled' %}active{% endif %}">Предстоящие</a>
+        {% if kind == 'quiz' %}<a href="{% url 'question_bank' %}">Банк вопросов</a>{% endif %}
+        <a href="{% url kind|add:'_list' %}?tab=history" class="{% if tab == 'history' %}active{% endif %}">История</a>
+    </nav>
+    {% include 'main/includes/search.html' %}
+</div>
+<div class="card-grid">
+    {% for a in page %}{% include 'main/includes/assessment_card.html' %}
+    {% empty %}<p class="empty">Пока ничего нет.</p>{% endfor %}
+</div>
+{% include 'main/includes/pagination.html' %}
+{% endwith %}
+{% endblock %}

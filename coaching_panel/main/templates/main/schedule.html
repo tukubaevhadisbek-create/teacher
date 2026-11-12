@@ -1,0 +1,55 @@
+{% extends 'main/base.html' %}
+{% block title %}Расписание | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head schedule-head">
+    <h2>Моё расписание</h2>
+    <span class="date-chip">{% include 'main/includes/icon.html' with name='calendar' %} {{ today|date:"d.m.Y" }}</span>
+</div>
+<div class="tabs-row">
+    <nav class="tabs">
+        <a href="?tab=tasks" class="{% if tab == 'tasks' %}active{% endif %}">Задачи</a>
+        <a href="?tab=week" class="{% if tab == 'week' %}active{% endif %}">Неделя</a>
+    </nav>
+    {% if tab == 'tasks' %}<a class="btn-blue btn-small" href="{% url 'task_add' %}">+ Добавить задачу</a>
+    {% else %}<a class="btn-blue btn-small" href="{% url 'live_class_add' %}">+ Добавить занятие</a>{% endif %}
+</div>
+
+{% if tab == 'tasks' %}
+<div class="kanban">
+    {% for value, label, tasks in columns %}
+    <section class="kan-col kan-{{ value }}">
+        <h3>{{ label }}</h3>
+        {% for t in tasks %}
+        <article class="kan-card">
+            <p>{{ t.title }}</p>
+            <a href="{% url 'task_detail' t.pk %}">Подробнее</a>
+        </article>
+        {% empty %}
+            {% if value == 'missed' %}<p class="kan-note">Любая задача после срока выполнения</p>{% endif %}
+            <p class="kan-empty">Ничего нет</p>
+        {% endfor %}
+    </section>
+    {% endfor %}
+</div>
+{% else %}
+<div class="week-nav">
+    <a class="btn-light btn-small" href="?tab=week&date={{ prev_week|date:'Y-m-d' }}">&laquo; Предыдущая неделя</a>
+    <strong>{{ monday|date:"j E" }} &ndash; {{ sunday|date:"j E Y" }}</strong>
+    <a class="btn-light btn-small" href="?tab=week&date={{ next_week|date:'Y-m-d' }}">Следующая неделя &raquo;</a>
+    <a class="btn-light btn-small" href="?tab=week">Сегодня</a>
+</div>
+<div class="week-grid">
+    {% for day, events in week %}
+    <section class="week-day {% if day == today %}today{% endif %}">
+        <h3>{{ day|date:"l" }}<span>{{ day|date:"j E" }}</span></h3>
+        {% for e in events %}
+        <a class="week-event ev-{{ e.css }}" href="{{ e.url }}">
+            <b>{{ e.time|time:"H:i" }}</b> {{ e.title }}
+            <small>{{ e.type }} &middot; {{ e.course }}</small>
+        </a>
+        {% empty %}<p class="kan-empty">Нет событий</p>{% endfor %}
+    </section>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

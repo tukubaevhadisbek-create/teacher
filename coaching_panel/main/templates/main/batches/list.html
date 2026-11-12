@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+{% block title %}Группы | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h2>Мои группы</h2>
+    <a class="btn-blue btn-small" href="{% url 'batch_add' %}">+ Добавить группу</a>
+</div>
+<div class="tabs-row">
+    <span></span>
+    {% include 'main/includes/search.html' %}
+</div>
+<div class="card-grid">
+    {% for batch in page %}
+    <article class="info-card">
+        <h3>{{ batch.name }}</h3>
+        <p class="muted">Курс: {{ batch.course.name }}</p>
+        <p class="muted">Студентов: {{ batch.student_count }}</p>
+        <a class="btn-blue" href="{% url 'batch_detail' batch.pk %}">Подробнее</a>
+    </article>
+    {% empty %}<p class="empty">Групп пока нет.</p>{% endfor %}
+</div>
+{% include 'main/includes/pagination.html' %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% block title %}{% if obj %}Редактирование занятия{% else %}Новое занятие{% endif %} | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>{% if obj %}Редактирование занятия{% else %}Новое занятие{% endif %}</h2></div>
+<form method="post" class="form-card">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <p class="muted">Ссылку на встречу можно взять в Zoom, Google Meet или другом сервисе видеосвязи.</p>
+    <div class="form-actions">
+        <button class="btn-blue" type="submit">Сохранить</button>
+        <a class="btn-light" href="{% url 'live_class_list' %}">Отмена</a>
+    </div>
+</form>
+{% endblock %}

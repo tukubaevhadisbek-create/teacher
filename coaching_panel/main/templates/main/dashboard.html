@@ -1,0 +1,69 @@
+{% extends 'main/base.html' %}
+{% block title %}Главная | TIPS-G{% endblock %}
+{% block content %}
+<div class="stat-tiles">
+    {% for label, value, url_name in stats %}
+    <a class="stat-tile" href="{% url url_name %}"><span class="stat-value">{{ value }}</span><span class="stat-label">{{ label }}</span></a>
+    {% endfor %}
+</div>
+<div class="dash-grid">
+    <section class="dash-col">
+        <div class="section-head">
+            <h2>Онлайн-занятия</h2>
+            <a class="pill pill-green" href="{% url 'live_class_list' %}">Все {% include 'main/includes/icon.html' with name='open' %}</a>
+        </div>
+        {% for c in live_classes %}
+            {% include 'main/includes/live_card.html' %}
+        {% empty %}
+            <p class="empty">Пока нет занятий.</p>
+        {% endfor %}
+    </section>
+
+    <section class="dash-col dash-tasks">
+        <div class="section-head">
+            <h2>Мои задачи</h2>
+            <a class="pill pill-blue" href="{% url 'schedule' %}">Канбан-доска {% include 'main/includes/icon.html' with name='open' %}</a>
+        </div>
+        <nav class="task-tabs">
+            {% for value, label in task_tabs %}
+                <a href="?task={{ value }}" class="{% if task_filter == value %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </nav>
+        {% for t in tasks %}
+        <article class="task-card">
+            <h3>{{ t.title }}</h3>
+            <div class="task-row"><span class="label">Назначено</span>
+                <span>{% include 'main/includes/icon.html' with name='clock' %} {{ t.assigned_at|time:"H:i" }}</span>
+                <span>{% include 'main/includes/icon.html' with name='calendar' %} {{ t.assigned_at|date:"j E Y" }}</span></div>
+            <div class="task-row"><span class="label">Срок</span>
+                <span>{% include 'main/includes/icon.html' with name='clock' %} {{ t.due_at|time:"H:i" }}</span>
+                <span>{% include 'main/includes/icon.html' with name='calendar' %} {{ t.due_at|date:"j E Y" }}</span></div>
+            <span class="chip task-{{ t.status }}">{{ t.get_status_display }}</span>
+            <a class="btn-blue" href="{% url 'task_detail' t.pk %}">Подробнее</a>
+        </article>
+        {% empty %}
+            <p class="empty">Здесь пока нет задач.</p>
+        {% endfor %}
+    </section>
+
+    <section class="dash-col">
+        <div class="section-head">
+            <h2>Мои группы</h2>
+            <a class="pill pill-pink" href="{% url 'batch_list' %}">Все {% include 'main/includes/icon.html' with name='open' %}</a>
+        </div>
+        {% for b in batches %}
+        <article class="batch-card">
+            <h3><a href="{% url 'batch_detail' b.pk %}">{{ b.name }}</a></h3>
+            <p>Предметов: {{ b.subject_count }}</p>
+            <p>Студентов: {{ b.student_count }}</p>
+            <p>Тестов: {{ b.quiz_count }}</p>
+            <p>Экзаменов: {{ b.exam_count }}</p>
+            <p>Заданий: {{ b.assignment_count }}</p>
+            <div class="batch-end">Группа заканчивает {{ b.end_date|date:"j E Y" }}</div>
+        </article>
+        {% empty %}
+            <p class="empty">Пока нет групп.</p>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

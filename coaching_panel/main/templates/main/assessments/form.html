@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% block title %}{% if a %}Редактирование{% else %}Создание{% endif %} {{ ru.gen }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel">
+        <a class="close" href="{% url kind|add:'_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        <h1>{% if a %}Редактирование{% else %}Создание{% endif %} {{ ru.gen }}</h1>
+        <form method="post" class="panel-form">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <div class="form-actions">
+                <button class="btn-blue" type="submit">Сохранить</button>
+                <a class="btn-light" href="{% url kind|add:'_list' %}">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

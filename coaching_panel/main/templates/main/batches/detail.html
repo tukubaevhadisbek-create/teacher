@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+{% block title %}Группа {{ batch.name }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel batch-panel">
+        <a class="close" href="{% url 'batch_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        <a class="btn-delete" href="{% url 'batch_delete' batch.pk %}">{% include 'main/includes/icon.html' with name='trash' %} Удалить</a>
+        {% include 'main/includes/messages.html' %}
+        <h1>Группа: {{ batch.name }}</h1>
+        <nav class="tabs panel-tabs">
+            <a href="?tab=overview" class="{% if tab == 'overview' %}active{% endif %}">Обзор</a>
+            <a href="?tab=classes" class="{% if tab == 'classes' %}active{% endif %}">Занятия</a>
+            <a href="?tab=assignments" class="{% if tab == 'assignments' %}active{% endif %}">Задания</a>
+            <a href="?tab=quizzes" class="{% if tab == 'quizzes' %}active{% endif %}">Тесты</a>
+            <a href="?tab=exams" class="{% if tab == 'exams' %}active{% endif %}">Экзамены</a>
+        </nav>
+
+        {% if tab == 'overview' %}
+            <p class="muted big">Курс</p>
+            <h2 class="field-value"><a href="{% url 'course_detail' batch.course.pk %}">{{ batch.course.name }}</a></h2>
+            <p class="muted">Группа заканчивает {{ batch.end_date|date:"j E Y" }}</p>
+            <h3 class="muted-title">Мои предметы</h3>
+            <div class="sem-grid">
+                {% for sem, subjects in my_subjects %}
+                <div><h4>Семестр {{ sem }}</h4><ol>{% for s in subjects %}<li>{{ s.name }}</li>{% endfor %}</ol></div>
+                {% empty %}<p class="muted">Предметы не назначены.</p>{% endfor %}
+            </div>
+            <h3 class="muted-title">Все предметы курса</h3>
+            <div class="sem-grid">
+                {% for sem, subjects in all_subjects %}
+                <div><h4>Семестр {{ sem }}</h4><ol>{% for s in subjects %}<li>{{ s.name }}</li>{% endfor %}</ol></div>
+                {% empty %}<p class="muted">У курса пока нет предметов.</p>{% endfor %}
+            </div>
+            <h3 class="muted-title">Студенты</h3>
+            <ul class="plain-list">
+                {% for student in students %}<li><a href="{% url 'student_profile' student.pk %}">{{ student.full_name }}</a> ({{ student.student_code }})</li>
+                {% empty %}<li class="muted">В этой группе пока нет студентов.</li>{% endfor %}
+            </ul>
+            <div class="form-actions">
+                <a class="btn-blue btn-small" href="{% url 'batch_edit' batch.pk %}">Редактировать группу</a>
+                <a class="btn-light btn-small" href="{% url 'student_add' %}">+ Добавить студента</a>
+            </div>
+        {% elif tab == 'classes' %}
+            <ul class="plain-list">
+                {% for c in items %}<li>{{ c.date|date:"j E Y" }}, {{ c.time|time:"H:i" }} &ndash; {{ c.title }} ({{ c.get_status_display }})</li>
+                {% empty %}<li class="muted">Занятий пока нет.</li>{% endfor %}
+            </ul>
+        {% else %}
+            <ul class="plain-list">
+                {% for a in items %}<li><a href="{% url a.kind|add:'_detail' a.pk %}">{{ a.title }}</a> &ndash; {{ a.date|date:"j E Y" }}</li>
+                {% empty %}<li class="muted">Пока ничего нет.</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

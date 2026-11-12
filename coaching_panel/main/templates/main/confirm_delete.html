@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ title }} | TIPS-G{% endblock %}
+{% block content %}
+<div class="page-head"><h2>{{ title }}</h2></div>
+<form method="post" class="form-card">
+    {% csrf_token %}
+    <p>Вы действительно хотите удалить {{ what }} <strong>«{{ name }}»</strong>? Это действие нельзя отменить.</p>
+    {% if warning %}<p class="muted">{{ warning }}</p>{% endif %}
+    <div class="form-actions">
+        <button class="btn-danger" type="submit">Да, удалить</button>
+        {% if cancel_args %}<a class="btn-light" href="{% url cancel_url cancel_args.0 %}">Отмена</a>
+        {% else %}<a class="btn-light" href="{% url cancel_url %}">Отмена</a>{% endif %}
+    </div>
+</form>
+{% endblock %}

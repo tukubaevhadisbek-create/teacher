@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ ru.created }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel success-box">
+        <a class="close" href="{% url kind|add:'_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        <h1>{{ ru.created }}</h1>
+        <p class="detail-line"><strong>{{ a.title }}</strong>: дата проведения {{ a.date|date:"d.m.Y" }}.</p>
+        <div class="form-actions">
+            <a class="btn-blue" href="{% url kind|add:'_detail' a.pk %}">Подробнее</a>
+            <a class="btn-light" href="{% url kind|add:'_list' %}">К списку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

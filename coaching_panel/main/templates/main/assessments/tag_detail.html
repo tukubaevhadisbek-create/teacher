@@ -1,0 +1,35 @@
+{% extends 'main/base.html' %}
+{% block title %}Тег | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel">
+        <a class="close" href="{% url 'question_bank' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        {% if can_edit %}<a class="btn-delete" href="{% url 'tag_delete' tag.pk %}">{% include 'main/includes/icon.html' with name='trash' %} Удалить</a>{% endif %}
+        {% include 'main/includes/messages.html' %}
+        <h1>Подробности тега</h1>
+        <h2 class="field-value">Название: {{ tag.name }}</h2>
+        <p class="detail-line tight"><span class="muted">Предмет</span> <strong>{{ tag.subject.name|default:"Все предметы" }}</strong></p>
+        <p class="detail-line tight"><span class="muted">Тип</span> <strong>{% if can_edit %}Ваш тег{% else %}Общий тег{% endif %}</strong></p>
+        <p class="detail-line"><strong>Вопросов с этим тегом: {{ questions|length }}</strong></p>
+
+        <h3 class="tags-title">Вопросы</h3>
+        <ol class="small-list">
+            {% for q in questions %}<li>{{ q.text|truncatechars:90 }} <span class="muted">(баллов: {{ q.marks }})</span></li>
+            {% empty %}<li class="muted">Вопросов пока нет.</li>{% endfor %}
+        </ol>
+
+        <h3 class="tags-title">Используется в тестах</h3>
+        {% for part in parts %}
+            <div class="tag-row"><a href="{% url 'quiz_detail' part.assessment.pk %}">{{ part.assessment.title }}</a><span>{{ part.percent }}%</span></div>
+            <div class="progress tag-bar tag-{{ forloop.counter }}"><div style="width: {{ part.percent }}%"></div></div>
+        {% empty %}<p class="muted">Пока не используется ни в одном тесте.</p>{% endfor %}
+
+        {% if can_edit %}
+        <div class="form-actions">
+            <a class="btn-blue btn-small" href="{% url 'tag_edit' tag.pk %}">Редактировать</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

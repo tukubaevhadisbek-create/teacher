@@ -1,0 +1,11 @@
+{% extends 'main/base.html' %}
+{% block title %}Ошибка {{ code }} | TIPS-G{% endblock %}
+{% block body %}
+<div class="login-page">
+    <div class="login-box error-box">
+        <h1>{{ code }}</h1>
+        <p>{{ text }}</p>
+        <a class="btn-blue" href="{% url 'dashboard' %}">На главную</a>
+    </div>
+</div>
+{% endblock %}

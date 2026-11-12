@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ ru.one }}: подробности | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel">
+        <a class="close" href="{% url kind|add:'_list' %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        <a class="btn-delete" href="{% url kind|add:'_delete' a.pk %}">{% include 'main/includes/icon.html' with name='trash' %} Удалить</a>
+        {% include 'main/includes/messages.html' %}
+        <h1>{{ ru.one }}: подробности</h1>
+        <h2 class="field-value">Название: {{ a.title }}</h2>
+        <p class="detail-line"><span class="muted">Курс</span> <strong>{{ a.course.name }}</strong></p>
+        <p class="detail-line"><span class="muted">Предмет</span> <strong>{{ a.subject.name }}</strong></p>
+        <p class="detail-line"><strong>Вопросов: {{ a.questions_count }}</strong> &nbsp; <strong>Баллов: {{ a.total_marks }}</strong></p>
+
+        <div class="progress-label wide"><span>Проходной процент</span><span class="blue">{{ a.passing_percentage }}%</span></div>
+        <div class="progress wide"><div style="width: {{ a.passing_percentage }}%"></div></div>
+
+        <p class="small-label">Расписание</p>
+        <div class="chips-row">
+            <span class="date-chip">{% include 'main/includes/icon.html' with name='calendar' %} {{ a.date|date:"d.m.Y" }}</span>
+            <span class="date-chip">{% include 'main/includes/icon.html' with name='clock' %} {{ a.start_time|time:"H:i" }} - {{ a.end_time|time:"H:i" }}</span>
+        </div>
+
+        <p class="small-label">Группы</p>
+        <div class="chips-row">
+            {% for batch in a.batches.all %}<a class="chip chip-outline" href="{% url 'batch_detail' batch.pk %}">{{ batch.name }}</a>
+            {% empty %}<span class="muted">Группы не выбраны.</span>{% endfor %}
+        </div>
+
+        {% if a.questions.all %}
+        <h3 class="tags-title">Выбранные вопросы</h3>
+        <ol class="small-list">{% for q in a.questions.all %}<li>{{ q.text|truncatechars:90 }} <span class="muted">(баллов: {{ q.marks }})</span></li>{% endfor %}</ol>
+        {% endif %}
+
+        {% if a.tag_parts.all %}
+        <h3 class="tags-title">Состав вопросов по тегам</h3>
+        {% for part in a.tag_parts.all %}
+            <div class="tag-row"><span><a href="{% url 'tag_detail' part.tag.pk %}">{{ part.tag.name }}</a></span><span>{{ part.percent }}%</span></div>
+            <div class="progress tag-bar tag-{{ forloop.counter }}"><div style="width: {{ part.percent }}%"></div></div>
+        {% endfor %}
+        {% endif %}
+
+        <p class="small-label">Результаты</p>
+        <p class="muted">Внесено результатов: {{ results_count }}</p>
+
+        <div class="form-actions">
+            <a class="btn-blue btn-small" href="{% url kind|add:'_results' a.pk %}">Результаты студентов</a>
+            <a class="btn-light btn-small" href="{% url kind|add:'_edit' a.pk %}">Редактировать</a>
+            {% if kind == 'quiz' %}<a class="btn-light btn-small" href="{% url 'quiz_tags' a.pk %}">Изменить теги</a>{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

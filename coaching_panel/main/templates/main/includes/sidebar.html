@@ -1,0 +1,21 @@
+<aside class="sidebar">
+    <a class="logo" href="{% url 'dashboard' %}">
+        <svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><path d="M1 1h24v6h-9v22h-6V7H1z" fill="#222"/></svg>
+        <span>TIPS-G</span>
+    </a>
+    <nav class="nav">
+        <a href="{% url 'dashboard' %}" class="{% if section == 'dashboard' %}active{% endif %}">{% include 'main/includes/icon.html' with name='dashboard' %}Главная</a>
+        <a href="{% url 'live_class_list' %}" class="{% if section == 'live_classes' %}active{% endif %}">{% include 'main/includes/icon.html' with name='live' %}Онлайн-занятия</a>
+        <a href="{% url 'schedule' %}" class="{% if section == 'schedule' %}active{% endif %}">{% include 'main/includes/icon.html' with name='schedule' %}Расписание</a>
+        <a href="{% url 'quiz_list' %}" class="{% if section == 'quiz' %}active{% endif %}">{% include 'main/includes/icon.html' with name='quiz' %}Тесты</a>
+        <a href="{% url 'exam_list' %}" class="{% if section == 'exam' %}active{% endif %}">{% include 'main/includes/icon.html' with name='exam' %}Экзамены</a>
+        <a href="{% url 'assignment_list' %}" class="{% if section == 'assignment' %}active{% endif %}">{% include 'main/includes/icon.html' with name='assignment' %}Задания</a>
+        <a href="{% url 'batch_list' %}" class="{% if section == 'batches' %}active{% endif %}">{% include 'main/includes/icon.html' with name='batches' %}Группы</a>
+        <a href="{% url 'course_list' %}" class="{% if section == 'courses' %}active{% endif %}">{% include 'main/includes/icon.html' with name='courses' %}Курсы</a>
+        <a href="{% url 'student_list' %}" class="{% if section == 'students' %}active{% endif %}">{% include 'main/includes/icon.html' with name='students' %}Студенты</a>
+    </nav>
+    <form class="logout" method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">{% include 'main/includes/icon.html' with name='logout' %}Выйти</button>
+    </form>
+</aside>

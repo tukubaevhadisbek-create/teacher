@@ -1,0 +1,17 @@
+<header class="topbar">
+    <h1>Привет, {{ user.first_name|default:user.username }}</h1>
+    <div class="topbar-right">
+        <a class="bell" href="{% url 'live_class_list' %}" title="Ближайшие занятия">
+            {% include 'main/includes/icon.html' with name='bell' %}
+        </a>
+        <div class="profile">
+            <span class="profile-button">{% include 'main/includes/icon.html' with name='user' %} &#9662;</span>
+            <div class="profile-menu">
+                <p>{{ user.get_full_name|default:user.username }}</p>
+                <a href="{% url 'profile' %}">Мой профиль</a>
+                <a href="{% url 'settings' %}">Настройки</a>
+                <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Выйти</button></form>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+{% block title %}Прикрепить PDF | TIPS-G{% endblock %}
+{% block body %}
+<div class="panel-page">
+    <div class="panel-left"></div>
+    <div class="panel">
+        <a class="close" href="{% url 'assignment_detail' a.pk %}" aria-label="Закрыть">{% include 'main/includes/icon.html' with name='close' %}</a>
+        <h1>Прикрепить PDF</h1>
+        <h2 class="field-value">Задание: {{ a.title }}</h2>
+        <form method="post" enctype="multipart/form-data" class="panel-form">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <div class="form-actions">
+                <button class="btn-blue" type="submit">Загрузить</button>
+                <a class="btn-light" href="{% url 'assignment_detail' a.pk %}">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
